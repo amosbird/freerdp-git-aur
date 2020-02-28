@@ -2,7 +2,7 @@
 
 pkgname=freerdp-git
 pkgdesc='Free RDP client - git checkout'
-pkgver=2.0.0.rc4.r1096.g94711084a
+pkgver=99999.2.0.0.rc4.r1096.g94711084a
 pkgrel=1
 pkgdesc="Free implementation of the Remote Desktop Protocol (RDP)"
 arch=('x86_64')
@@ -24,12 +24,12 @@ pkgver() {
   cd freerdp/
 
   if GITTAG="$(git describe --abbrev=0 --tags 2>/dev/null)"; then
-    printf '%s.r%s.g%s' \
+    printf '99999.%s.r%s.g%s' \
       "$(sed -e "s/^${pkgname%%-git}//" -e 's/^[-_/a-zA-Z]\+//' -e 's/[-_+]/./g' <<< ${GITTAG})" \
       "$(git rev-list --count ${GITTAG}..)" \
       "$(git rev-parse --short HEAD)"
   else
-    printf '0.r%s.g%s' \
+    printf '99999.0.r%s.g%s' \
       "$(git rev-list --count master)" \
       "$(git rev-parse --short HEAD)"
   fi
