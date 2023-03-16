@@ -5,19 +5,57 @@ pkgdesc='Free RDP client - git checkout'
 pkgver=99999.2.0.0.r1158.gf57449749
 pkgrel=1
 pkgdesc="Free implementation of the Remote Desktop Protocol (RDP) - git checkout"
-arch=('i686' 'x86_64')
+arch=(x86_64)
 url="https://www.freerdp.com/"
-license=('Apache')
-depends=('dbus-glib' 'fuse' 'glibc' 'gstreamer' 'gst-plugins-base-libs' 'libcups'
-'libgssglue' 'libx11' 'libxcursor' 'libxext' 'libxdamage' 'libxfixes'
-'libxkbcommon' 'libxi' 'libxinerama' 'libxkbfile' 'libxrandr' 'libxrender'
-'libxtst' 'openssl' 'pcsclite' 'wayland' 'icu')
-optdepends=('libva')
-makedepends=('alsa-lib' 'cmake' 'docbook-xsl' 'ffmpeg' 'krb5' 'libjpeg-turbo'
-'libpulse' 'libusb' 'pam' 'systemd-libs' 'xmlto' 'xorgproto')
-provides=('freerdp' 'libfreerdp3.so' 'libfreerdp-client3.so' 'libfreerdp-server3.so'
-'libfreerdp-shadow3.so' 'libfreerdp-shadow-subsystem3.so' 'libwinpr3.so'
-'libwinpr-tools3.so' 'libuwac0.so')
+license=(Apache)
+depends=(
+  dbus-glib
+  glibc
+  gstreamer
+  gst-plugins-base-libs
+  libcups
+  libgssglue
+  libx11
+  libxcursor
+  libxext
+  libxdamage
+  libxfixes
+  libxkbcommon
+  libxi
+  libxinerama
+  libxkbfile
+  libxrandr
+  libxrender
+  libxtst
+  pcsclite
+  wayland
+)
+makedepends=(
+  alsa-lib
+  cmake
+  docbook-xsl
+  ffmpeg
+  icu
+  krb5
+  libjpeg-turbo
+  libpulse
+  libusb
+  openssl
+  pam
+  systemd
+  xmlto
+  xorgproto
+)
+provides=(
+  libfreerdp2.so
+  libfreerdp-client2.so
+  libfreerdp-server2
+  libfreerdp-shadow2.so
+  libfreerdp-shadow-subsystem2.so
+  libwinpr2.so
+  libwinpr-tools2.so
+  libuwac0.so
+)
 conflicts=('freerdp')
 source=('freerdp::git+https://github.com/amosbird/FreeRDP.git')
 sha256sums=('SKIP')
@@ -64,12 +102,24 @@ build() {
   make -C build
 }
 
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
 package() {
-  depends+=('libasound.so' 'libavcodec.so' 'libavutil.so' 'libjpeg.so' 'libpam.so'
-  'libpulse.so' 'libswscale.so' 'libswresample.so' 'libsystemd.so'
-  'libusb-1.0.so')
+  depends+=(
+    alsa-lib libasound.so
+    ffmpeg libavcodec.so libavutil.so libswresample.so libswscale.so
+    icu libicuuc.so
+    libjpeg-turbo libjpeg.so
+    libpulse libpulse.so
+    libusb libusb-1.0.so
+    openssl libcrypto.so libssl.so
+    pam libpam.so
+    systemd-libs libsystemd.so
+  )
+
   cd freerdp/
   make DESTDIR="${pkgdir}" install -C build
-  install -vDm 644 {ChangeLog,README.md} \
-    -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -vDm 644 $_name-$pkgver/{ChangeLog,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
 }
