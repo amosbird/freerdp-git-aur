@@ -72,6 +72,8 @@ pkgver() {
 }
 
 build() {
+  cd freerdp/
+
   local cmake_options=(
     -DCMAKE_INSTALL_PREFIX=/usr
     -DCMAKE_INSTALL_LIBDIR=lib
@@ -101,10 +103,14 @@ build() {
 }
 
 check() {
+  cd freerdp/
+
   ctest --test-dir build --output-on-failure
 }
 
 package() {
+  cd freerdp/
+
   depends+=(
     alsa-lib libasound.so
     ffmpeg libavcodec.so libavutil.so libswresample.so libswscale.so
