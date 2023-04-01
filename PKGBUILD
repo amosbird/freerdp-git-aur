@@ -103,6 +103,7 @@ build() {
 }
 
 check() {
+  cd freerdp/
   ctest --test-dir build --output-on-failure
 }
 
