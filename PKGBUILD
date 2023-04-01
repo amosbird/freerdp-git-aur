@@ -2,7 +2,7 @@
 
 pkgname=freerdp-git
 pkgdesc='Free RDP client - git checkout'
-pkgver=99999.2.0.0.r1158.gf57449749
+pkgver=99999.2.0.0.r222
 pkgrel=1
 pkgdesc="Free implementation of the Remote Desktop Protocol (RDP) - git checkout"
 arch=(x86_64)
@@ -57,7 +57,6 @@ source=('freerdp::git+https://github.com/amosbird/FreeRDP.git')
 sha256sums=('SKIP')
 
 pkgver() {
-  >&2 echo $PWD
   cd freerdp/
 
   if GITTAG="$(git describe --abbrev=0 --tags 2>/dev/null)"; then
@@ -73,10 +72,7 @@ pkgver() {
 }
 
 build() {
-  >&2 echo $PWD
-  cd freerdp/
-
-  local cmake_options=(
+  cmake_options=(
     -DCMAKE_INSTALL_PREFIX=/usr
     -DCMAKE_INSTALL_LIBDIR=lib
     -DCMAKE_BUILD_TYPE=None
@@ -97,7 +93,7 @@ build() {
     -DCHANNEL_URBDRC_CLIENT=ON
     -Wno-dev
     -B build
-    -S $_name-$pkgver
+    -S freerdp
   )
 
   cmake "${cmake_options[@]}"
@@ -105,15 +101,10 @@ build() {
 }
 
 check() {
-  >&2 echo $PWD
-  cd freerdp/
   ctest --test-dir build --output-on-failure
 }
 
 package() {
-  >&2 echo $PWD
-  cd freerdp/
-
   depends+=(
     alsa-lib libasound.so
     ffmpeg libavcodec.so libavutil.so libswresample.so libswscale.so
@@ -127,5 +118,5 @@ package() {
   )
 
   DESTDIR="$pkgdir" cmake --install build
-  install -vDm 644 $_name-$pkgver/{ChangeLog,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 freerdp/{ChangeLog,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
 }
