@@ -9,12 +9,8 @@ arch=(x86_64)
 url="https://www.freerdp.com/"
 license=(Apache)
 depends=(
-  dbus-glib
   glibc
-  gstreamer
-  gst-plugins-base-libs
   libcups
-  libgssglue
   libx11
   libxcursor
   libxext
@@ -76,30 +72,36 @@ pkgver() {
 }
 
 build() {
-  cd freerdp/
-  cmake -DCMAKE_INSTALL_PREFIX='/usr' \
-        -DCMAKE_INSTALL_LIBDIR='lib' \
-        -DCMAKE_BUILD_TYPE='None' \
-        -DPROXY_PLUGINDIR='/usr/lib/freerdp2/server/proxy/plugins' \
-        -DWITH_DSP_FFMPEG=ON \
-        -DWITH_FFMPEG=ON \
-        -DWITH_PULSE=ON \
-        -DWITH_CUPS=ON \
-        -DWITH_PCSC=ON \
-        -DWITH_JPEG=ON \
-        -DWITH_SERVER=ON \
-        -DWITH_SWSCALE=ON \
-        -DWITH_CHANNELS=ON \
-        -DWITH_CLIENT_CHANNELS=ON \
-        -DWITH_SERVER_CHANNELS=ON \
-        -DCHANNEL_URBDRC_CLIENT=ON \
-        -DWITH_VAAPI=ON \
-        -DWITH_FUSE=ON \
-        -DWITH_ICU=ON \
-        -Wno-dev \
-        -B build \
-        -S .
-  make -C build
+  local cmake_options=(
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DCMAKE_INSTALL_LIBDIR=lib
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_SKIP_INSTALL_RPATH=ON
+    -DPROXY_PLUGINDIR=/usr/lib/freerdp2/server/proxy/plugins
+    -DWITH_DSP_FFMPEG=ON
+    -DWITH_FFMPEG=ON
+    -DWITH_PULSE=ON
+    -DWITH_CUPS=ON
+    -DWITH_PCSC=ON
+    -DWITH_ICU=ON
+    -DWITH_JPEG=ON
+    -DWITH_SERVER=ON
+    -DWITH_SWSCALE=ON
+    -DWITH_CHANNELS=ON
+    -DWITH_CLIENT_CHANNELS=ON
+    -DWITH_SERVER_CHANNELS=ON
+    -DCHANNEL_URBDRC_CLIENT=ON
+    -Wno-dev
+    -B build
+    -S $_name-$pkgver
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
 }
 
 package() {
@@ -115,7 +117,6 @@ package() {
     systemd-libs libsystemd.so
   )
 
-  cd freerdp/
-  make DESTDIR="${pkgdir}" install -C build
+  DESTDIR="$pkgdir" cmake --install build
   install -vDm 644 $_name-$pkgver/{ChangeLog,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
 }
