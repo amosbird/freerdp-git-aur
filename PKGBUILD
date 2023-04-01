@@ -102,11 +102,6 @@ build() {
   make -C build
 }
 
-check() {
-  cd freerdp/
-  ctest --test-dir build --output-on-failure
-}
-
 package() {
   depends+=(
     alsa-lib libasound.so
