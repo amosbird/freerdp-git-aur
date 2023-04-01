@@ -57,6 +57,7 @@ source=('freerdp::git+https://github.com/amosbird/FreeRDP.git')
 sha256sums=('SKIP')
 
 pkgver() {
+  echo $PWD
   cd freerdp/
 
   if GITTAG="$(git describe --abbrev=0 --tags 2>/dev/null)"; then
@@ -72,6 +73,7 @@ pkgver() {
 }
 
 build() {
+  echo $PWD
   cd freerdp/
 
   local cmake_options=(
@@ -103,12 +105,13 @@ build() {
 }
 
 check() {
+  echo $PWD
   cd freerdp/
-
   ctest --test-dir build --output-on-failure
 }
 
 package() {
+  echo $PWD
   cd freerdp/
 
   depends+=(
